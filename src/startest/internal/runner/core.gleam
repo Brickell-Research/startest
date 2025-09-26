@@ -124,8 +124,8 @@ fn run_test(test_case: Test) -> TestOutcome {
   case test_case.skipped {
     True -> Skipped
     False -> {
-      case test_failure.rescue(test_case.body) {
-        Ok(Nil) -> Passed
+      case test_failure.rescue_any(test_case.body) {
+        Ok(_) -> Passed
         Error(err) -> Failed(err)
       }
     }

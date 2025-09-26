@@ -30,6 +30,22 @@ pub fn rescue(f: fn() -> Nil) -> Result(Nil, TestFailure) {
   }
 }
 
+pub fn rescue_any(f: fn() -> a) -> Result(a, TestFailure) {
+  case exception.rescue(f) {
+    Ok(result) -> Ok(result)
+    Error(exception) -> {
+      let panic_info =
+        exception
+        |> try_decode_panic_info
+      case panic_info {
+        Ok(panic_info) ->
+          Error(AssertionError(RescuedAssertionError(panic_info.message)))
+        Error(Nil) -> Error(GenericError(exception))
+      }
+    }
+  }
+}
+
 pub fn to_string(failure: TestFailure) -> String {
   case failure {
     AssertionError(assertion_error) -> assertion_error.message
